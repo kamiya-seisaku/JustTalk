@@ -9,7 +9,27 @@
 		integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
 	<link rel="stylesheet" href="css/style.css" />
 	<link rel="icon" href="Images/conversation.png">
-	<title>JustTalk App</title>
+	<title>Uncertain-days App</title>
+
+	<script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+	<script>
+		// src="/socket.io/socket.io.js"
+		const socket = io(); // Connect to your WebSocket server
+
+		document.addEventListener('keydown', (event) => {
+			const allowedKeys = ['a', 'd']; // Add more keys if needed
+			if (allowedKeys.includes(event.key)) {
+				socket.emit('keyPress', event.key);
+			}
+		});
+
+		document.addEventListener('keydown', (event) => {
+			const allowedKeys = ['a', 'd']; // Add more keys as needed
+			if (allowedKeys.includes(event.key)) {
+				socket.emit('keyPress', event.key);
+			}
+		});
+	</script>
 </head>
 
 <body>

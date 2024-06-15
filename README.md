@@ -28,3 +28,4 @@ Features:
 - Inside a room, each user's name is displayed in a separate panel.
 - Full emoji support.
 - Custom css.
+Gg

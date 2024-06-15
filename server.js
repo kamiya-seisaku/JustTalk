@@ -1,33 +1,38 @@
-/*
-  .
-  .
-  ========= Import and setup dependencies ============
-  .
-  .
-*/
-// core modules
 const path = require('path');
 const http = require('http');
-
-// express initializaion
 const express = require('express');
 const app = express();
-
-// import and initialize socket
 const socketio = require('socket.io');
 const server = http.createServer(app);
 const io = socketio(server);
-
-// global constants
+// globals
 const PORT = process.env.PORT || 3000;
-const botName = 'JustTalk bot';
-
-// utility functions
-const formatMessage = require('./utils/messages');
+const botName = 'Cirtain-Days bot';
+// utils
+const format_socket_message = require('./utils/messages');
 const { userJoin, getCurrentUser, userLeaves, getRoomUsers } = require('./utils/users');
 
 // serve static assets
 app.use(express.static(path.join(__dirname, 'public')));
+
+// // intercept root route to inject key press event listener/websocket client
+// app.get('/', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+
+//   // Inject JavaScript into index.html
+//   const injectedScript = `
+//       <script>
+//           document.addEventListener('keydown', (event) => {
+//               const allowedKeys = ['a', 'd']; // Add more keys as needed
+//               if (allowedKeys.includes(event.key)) {
+//                   socket.emit('keyPress', event.key);
+//               }
+//           });
+//       </script>
+//   `;
+//   res.write(injectedScript);
+//   res.end();
+// });
 
 /*
   .
@@ -75,7 +80,7 @@ io.on('connection', (socket) => {
     */
     socket.emit(
       'message',
-      formatMessage(
+      format_socket_message(
         botName,
         'Welcome to JustTalk! This is a chatting platform developed by Nikhil Sourav!'
       )
@@ -91,7 +96,7 @@ io.on('connection', (socket) => {
     */
     socket.broadcast
       .to(user.room)
-      .emit('message', formatMessage(botName, `${user.username} has joined the chat`));
+      .emit('message', format_socket_message(botName, `${user.username} has joined the chat`));
 
     /*
     .
@@ -118,7 +123,16 @@ io.on('connection', (socket) => {
     */
     socket.on('chatMessage', (msg) => {
       const user = getCurrentUser(socket.id);
-      io.to(user.room).emit('message', formatMessage(user.username, msg));
+      io.to(user.room).emit('message', format_socket_message(user.username, msg));
+    });
+
+
+    // kkey uncirtain-days
+    socket.on('keyPress', (key) => {
+      if (key === 'a' || key === 'd') {
+        console.log(key + ' key pressed');
+        io.emit('keyPress', key); // Broadcast the key press to all clients
+      }
     });
 
     /*
@@ -137,7 +151,7 @@ io.on('connection', (socket) => {
       if (user) {
         io.to(user.room).emit(
           'message',
-          formatMessage(botName, `${user.username} has left the chat`)
+          format_socket_message(botName, `${user.username} has left the chat`)
         );
 
         // Send users and room info to update
@@ -148,7 +162,18 @@ io.on('connection', (socket) => {
       }
     });
   });
+
+  // // kkey uncirtain-days
+  // socket.on('keyPress', (key) => {
+  //   if (key === 'a' || key === 'd') {
+  //     console.log(key + ' key pressed');
+  //     io.emit('keyPress', key); // Broadcast the key press to all clients
+  //   }
+  // });
 });
+
+
+// ... rest of your existing code ...
 
 // fire up server
 server.listen(PORT, () => console.log(`server up on port ${PORT}`));
