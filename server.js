@@ -126,15 +126,6 @@ io.on('connection', (socket) => {
       io.to(user.room).emit('message', format_socket_message(user.username, msg));
     });
 
-
-    // kkey uncirtain-days
-    socket.on('keyPress', (key) => {
-      if (key === 'a' || key === 'd') {
-        console.log(key + ' key pressed');
-        io.emit('keyPress', key); // Broadcast the key press to all clients
-      }
-    });
-
     /*
     .
     .
@@ -172,8 +163,15 @@ io.on('connection', (socket) => {
   // });
 });
 
-
-// ... rest of your existing code ...
+// kkey uncirtain-days
+io.on('connection', (socket) => {
+  socket.on('keyPress', (key) => {
+    if (key === 'a' || key === 'd') {
+      console.log(key + ' key pressed');
+      io.emit('keyPress', key); // Broadcast the key press to all clients
+    }
+  });
+});
 
 // fire up server
 server.listen(PORT, () => console.log(`server up on port ${PORT}`));
